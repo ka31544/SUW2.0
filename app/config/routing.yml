@@ -17,3 +17,7 @@ _login:
 _main:
   path: /main
   defaults: { _controller: AppBundle:Main:index }
+  
+_logs:
+ path: /logs
+ defaults: { _controller: AppBundle:Logs:index }
