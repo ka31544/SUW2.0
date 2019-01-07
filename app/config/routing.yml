@@ -21,3 +21,7 @@ _main:
 _logs:
  path: /logs
  defaults: { _controller: AppBundle:Logs:index }
+
+_settings:
+  path: /settings
+  defaults: { _controller: AppBundle:Settings:index }
