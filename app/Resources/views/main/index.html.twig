@@ -18,7 +18,14 @@
 {% block rightContent %}
     <div class="column is-6">
         <h2 class="title">Statystyki</h2>
-        <h3 class="subtitle"><i class="fa fa-users fa-fw"></i>Liczba użytkowników</h3>
+        <h3 class="subtitle"><i class="fa fa-users fa-fw"></i>Liczba użytkowników
+            {{ count }}
+        </h3>
+
+        {{ user.login }}
+
+        {{ dump(app.user) }}
+
         <ul class="list-items">
             <li class="items">Razem<br></li>
         </ul>

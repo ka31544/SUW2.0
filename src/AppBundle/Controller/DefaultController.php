@@ -8,8 +8,27 @@ use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller
 {
+//    private function countUsersAction()
+//    {
+//        $users = $this->getDoctrine()
+//            ->getRepository('AppBundle:users')
+//            ->findAll();
+//        return $users;
+//    }
+
     public function indexAction(Request $request)
     {
-        return $this->render('main/index.html.twig');
+        $repository = $this->getDoctrine()->getRepository('AppBundle:users');
+        $result = $repository->countUsers();
+
+        $user = $repository->getByUsername('ka31544');
+
+
+
+
+        return $this->render('main/index.html.twig', array(
+            'count' => $result,
+            'user' => $user,
+        ));
     }
 }

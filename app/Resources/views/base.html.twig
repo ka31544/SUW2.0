@@ -27,9 +27,11 @@
             <main>
                 <div class="container">
                     <div class="columns">
-                        {% block Content %} {% endblock %}
-                        {% block leftContent %} {% endblock %}
-                        {% block rightContent %} {% endblock %}
+                        {% block body %}
+                            {% block Content %} {% endblock %}
+                            {% block leftContent %} {% endblock %}
+                            {% block rightContent %} {% endblock %}
+                        {% endblock %}
                     </div>
                 </div>
             </main>

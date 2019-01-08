@@ -2,6 +2,8 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\users;
+
 /**
  * usersRepository
  *
@@ -10,4 +12,32 @@ namespace AppBundle\Repository;
  */
 class usersRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @return int
+     */
+    public function countUsers()
+    {
+        $users = $this->createQueryBuilder('u')
+            ->orderBy('u.id', 'asc')
+            ->getQuery()
+            ->getResult();
+        return count($users);
+    }
+
+    /**
+     * @param $username
+     * @return users
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getByUsername($username)
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->where('u.login = :username')
+            ->setParameter('username', $username);
+        $query = $qb->getQuery();
+        $user = $query->getSingleResult();
+
+        return $user;
+    }
 }
