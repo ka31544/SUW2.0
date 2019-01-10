@@ -21,14 +21,14 @@ class DefaultController extends Controller
         $repository = $this->getDoctrine()->getRepository('AppBundle:users');
         $result = $repository->countUsers();
 
-        $user = $repository->getByUsername('ka31544');
+//        $user = $repository->getByUsername('ka31544');
 
 
 
 
         return $this->render('main/index.html.twig', array(
             'count' => $result,
-            'user' => $user,
+//            'user' => $user,
         ));
     }
 }

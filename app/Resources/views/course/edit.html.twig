@@ -1,21 +1,18 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Course edit</h1>
+<div class="column is-6">
+    <h2 class="title">Edycja kursu</h2>
 
     {{ form_start(edit_form) }}
         {{ form_widget(edit_form) }}
-        <input type="submit" value="Edit" />
+        <input type="submit" value="Edytuj" class="primary-button">
     {{ form_end(edit_form) }}
 
-    <ul>
-        <li>
-            <a href="{{ path('course_index') }}">Back to the list</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+    <a href="{{ path('course_index') }}" class="primary-button">Wróć do listy kursów</a>
+
+    {{ form_start(delete_form) }}
+        <input type="submit" value="Usuń" class="primary-button">
+    {{ form_end(delete_form) }}
+</div>
 {% endblock %}
