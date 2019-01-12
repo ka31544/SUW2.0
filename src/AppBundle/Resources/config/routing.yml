@@ -9,4 +9,3 @@ app_user:
 app_file:
     resource: "@AppBundle/Resources/config/routing/file.yml"
     prefix:   /file
-
