@@ -18,8 +18,8 @@
                 <td><a href="{{ path('course_show', { 'id': course.id }) }}">{{ course.id }}</a></td>
                 <td>{{ course.nazwa }}</td>
                 <td>
-                    <a href="{{ path('course_show', { 'id': course.id }) }}" class="primary-button inline-block">Pokaż</a>
-                    <a href="{{ path('course_edit', { 'id': course.id }) }}" class="primary-button inline-block">Edytuj</a>
+                    <a href="{{ path('course_show', { 'id': course.id }) }}" class="primary-button">Pokaż</a>
+                    <a href="{{ path('course_edit', { 'id': course.id }) }}" class="primary-button">Edytuj</a>
                 </td>
             </tr>
         {% endfor %}

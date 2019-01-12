@@ -1,16 +1,14 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>User creation</h1>
+<div class="column is-6">
+    <h2 class="title">Utworzenie użytkownika</h2>
 
     {{ form_start(form) }}
         {{ form_widget(form) }}
-        <input type="submit" value="Create" />
+        <input type="submit" value="Utwórz" class="primary-button" />
     {{ form_end(form) }}
 
-    <ul>
-        <li>
-            <a href="{{ path('user_index') }}">Back to the list</a>
-        </li>
-    </ul>
+    <a href="{{ path('user_index') }}"><i class="fa fa-reply fa-2x" title="Wróć do listy użytkowników"></i></a>
+</div>
 {% endblock %}

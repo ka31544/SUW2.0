@@ -25,18 +25,12 @@
         </tbody>
     </table>
 
-    <ul>
-        <li>
-            <a href="{{ path('user_index') }}" class="primary-button">Wróć do listy użytkowników</a>
-        </li>
-        <li>
-            <a href="{{ path('user_edit', { 'id': user.id }) }}" class="primary-button">Edytuj</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Usuń" class="primary-button">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+    <a href="{{ path('user_edit', { 'id': user.id }) }}" class="primary-button">Zapisz</a>
+    {{ form_start(delete_form) }}
+        <input type="submit" value="Usuń" class="primary-button">
+    {{ form_end(delete_form) }}
+
+    <a href="{{ path('user_index') }}"><i class="fa fa-reply fa-2x" title="Wróć do listy użytkowników"></i></a>
+
 </div>
 {% endblock %}
