@@ -21,11 +21,12 @@ class FileType extends AbstractType
             )
         ))
         ->add('sciezka', 'file', array(
-            'required' => true,
+            'required' => false,
             'label' => 'Wybierz plik',
             'attr' => array(
                 'class' => 'file-input'
-            )
+            ),
+            'data_class' => null
         ))
         ->add('nrKursu', 'text', array(
             'required' => true,
