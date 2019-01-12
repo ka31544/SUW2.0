@@ -18,7 +18,7 @@ class DefaultController extends Controller
 
     public function indexAction(Request $request)
     {
-        $repository = $this->getDoctrine()->getRepository('AppBundle:users');
+        $repository = $this->getDoctrine()->getRepository('AppBundle:User');
         $result = $repository->countUsers();
 
 //        $user = $repository->getByUsername('ka31544');

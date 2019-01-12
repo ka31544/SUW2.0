@@ -2,3 +2,6 @@ app_course:
     resource: "@AppBundle/Resources/config/routing/course.yml"
     prefix:   /course
 
+app_user:
+    resource: "@AppBundle/Resources/config/routing/user.yml"
+    prefix:   /user
