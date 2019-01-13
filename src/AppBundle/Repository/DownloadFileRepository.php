@@ -69,4 +69,37 @@ class DownloadFileRepository extends \Doctrine\ORM\EntityRepository
         $monthDownloads = $qb->getResult();
         return count($monthDownloads);
     }
+
+    /**
+     * @return int
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function countYearDownloads()
+    {
+        $emConfig = $this->getEntityManager()->getConfiguration();
+        $emConfig->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
+
+        $year = date('Y');
+
+        $qb = $this->createQueryBuilder('y')
+            ->where('YEAR(y.dataDodania) = :year')
+            ->orderBy('y.id', 'asc')
+            ->setParameter('year', $year)
+            ->getQuery();
+        $YearDownloads = $qb->getResult();
+        return count($YearDownloads);
+    }
+
+    /**
+     * @return int
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function countAllDownloads()
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->orderBy('a.id', 'asc')
+            ->getQuery();
+        $AllDownloads = $qb->getResult();
+        return count($AllDownloads);
+    }
 }

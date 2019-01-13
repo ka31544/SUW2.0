@@ -15,6 +15,8 @@ class DefaultController extends Controller
         $countDayDownloads = $this->getDoctrine()->getRepository('AppBundle:DownloadFile')->countDayDownloads();
         $countWeekDownloads = $this->getDoctrine()->getRepository('AppBundle:DownloadFile')->countWeekDownloads();
         $countMonthDownloads = $this->getDoctrine()->getRepository('AppBundle:DownloadFile')->countMonthDownloads();
+        $countYearDownloads = $this->getDoctrine()->getRepository('AppBundle:DownloadFile')->countYearDownloads();
+        $countAllDownloads = $this->getDoctrine()->getRepository('AppBundle:DownloadFile')->countAllDownloads();
 
 //        $user = $repository->getByUsername('ka31544');
 
@@ -23,6 +25,8 @@ class DefaultController extends Controller
             'countDayDownloads' => $countDayDownloads,
             'countWeekDownloads' => $countWeekDownloads,
             'countMonthDownloads' => $countMonthDownloads,
+            'countYearDownloads' => $countYearDownloads,
+            'countAllDownloads' => $countAllDownloads,
 //            'user' => $user,
         ));
     }
