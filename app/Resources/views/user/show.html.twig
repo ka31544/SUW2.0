@@ -22,10 +22,11 @@
                 <th>Status aktywności</th>
                 <td>{{ user.active }}</td>
             </tr>
+            <tr></tr>
         </tbody>
     </table>
 
-    <a href="{{ path('user_edit', { 'id': user.id }) }}" class="primary-button">Zapisz</a>
+    <a href="{{ path('user_edit', { 'id': user.id }) }}" class="primary-button">Edytuj</a>
     {{ form_start(delete_form) }}
         <input type="submit" value="Usuń" class="primary-button">
     {{ form_end(delete_form) }}

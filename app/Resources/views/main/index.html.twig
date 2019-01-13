@@ -24,13 +24,13 @@
         {{ dump(app.user) }}
 
         <ul class="list-items">
-            <li class="items">Razem<br>{{ count }}</li>
+            <li class="items">Razem<br>{{ countUsers }}</li>
         </ul>
         <h3 class="subtitle"><i class="fa fa-download fa-fw"></i>Pobrania</h3>
         <ul class="list-items">
-            <li class="items">Dzień<br></li>
-            <li class="items">Tydzień<br></li>
-            <li class="items">Miesiąc<br></li>
+            <li class="items">Dzień<br>{{ countDayDownloads }}</li>
+            <li class="items">Tydzień<br>{{ countWeekDownloads }}</li>
+            <li class="items">Miesiąc<br>{{ countMonthDownloads }}</li>
             <li class="items">Semestr<br></li>
         </ul>
     </div>

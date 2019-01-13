@@ -8,27 +8,23 @@ use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller
 {
-//    private function countUsersAction()
-//    {
-//        $users = $this->getDoctrine()
-//            ->getRepository('AppBundle:users')
-//            ->findAll();
-//        return $users;
-//    }
 
     public function indexAction(Request $request)
     {
-        $repository = $this->getDoctrine()->getRepository('AppBundle:User');
-        $result = $repository->countUsers();
+        $countUsers = $this->getDoctrine()->getRepository('AppBundle:User')->countUsers();
+        $countDayDownloads = $this->getDoctrine()->getRepository('AppBundle:DownloadFile')->countDayDownloads();
+        $countWeekDownloads = $this->getDoctrine()->getRepository('AppBundle:DownloadFile')->countWeekDownloads();
+        $countMonthDownloads = $this->getDoctrine()->getRepository('AppBundle:DownloadFile')->countMonthDownloads();
 
 //        $user = $repository->getByUsername('ka31544');
 
-
-
-
         return $this->render('main/index.html.twig', array(
-            'count' => $result,
+            'countUsers' => $countUsers,
+            'countDayDownloads' => $countDayDownloads,
+            'countWeekDownloads' => $countWeekDownloads,
+            'countMonthDownloads' => $countMonthDownloads,
 //            'user' => $user,
         ));
     }
+
 }
