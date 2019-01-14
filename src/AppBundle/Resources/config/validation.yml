@@ -19,20 +19,19 @@ AppBundle\Entity\File:
           mimeTypes: [application/pdf, application/x-pdf]
           mimeTypesMessage: Można wgrać tylko plik PDF
 
-#AppBundle\Entity\User:
-#  properties:
-#    login:
-#      - NotBlank: ~
-#      - Length:
-#          min: 7
-#          max: 7
-#          exactMessage: Nazwa użytkownika powinna zawierać dokładnie 7 znaków.
+AppBundle\Entity\User:
+  properties:
+    login:
+      - Length:
+          min: 7
+          max: 7
+          exactMessage: Nazwa użytkownika powinna zawierać dokładnie 7 znaków.
 #    password:
 #      - Length:
-#        min: 8
-#        max: 32
-#        exactMessage: Nazwa użytkownika powinna zawierać od 8 do 32 znaków.
-#    typeAccount:
-#      - Choice: [user, admin]
-#    active:
-#      - Choice: [0, 1]
+#          min: 8
+#          max: 32
+#          exactMessage: Hasło użytkownika powinno zawierać od 8 do 32 znaków.
+    typeAccount:
+      - Choice: [user, admin]
+    active:
+      - Choice: [0, 1]
