@@ -13,10 +13,12 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @return int
      */
-    public function countUsers()
+    public function countUsers($type)
     {
         $users = $this->createQueryBuilder('u')
+            ->where('u.typeAccount = :user')
             ->orderBy('u.id', 'asc')
+            ->setParameter('user', $type)
             ->getQuery()
             ->getResult();
         return count($users);

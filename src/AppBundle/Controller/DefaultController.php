@@ -11,7 +11,7 @@ class DefaultController extends Controller
 
     public function indexAction(Request $request)
     {
-        $countUsers = $this->getDoctrine()->getRepository('AppBundle:User')->countUsers();
+        $countUsers = $this->getDoctrine()->getRepository('AppBundle:User')->countUsers('user');
         $countDayDownloads = $this->getDoctrine()->getRepository('AppBundle:DownloadFile')->countDayDownloads();
         $countWeekDownloads = $this->getDoctrine()->getRepository('AppBundle:DownloadFile')->countWeekDownloads();
         $countMonthDownloads = $this->getDoctrine()->getRepository('AppBundle:DownloadFile')->countMonthDownloads();
