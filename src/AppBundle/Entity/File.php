@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * File
  *
- * @ORM\Table(name="plik")
+ * @ORM\Table(name="File")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\FileRepository")
  */
 class File
@@ -18,6 +18,8 @@ class File
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\dostep",mappedBy="nrPliku")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\DownloadFile",mappedBy="nrPliku")
      */
     private $id;
 
@@ -38,11 +40,16 @@ class File
     /**
      * @var int
      *
-     * @ORM\Column(name="nr_kursu", type="integer")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Course",inversedBy="id")
      */
     private $nrKursu;
 
+    /**
+     * @var int
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User",inversedBy="id")
+     */
 
+    private $nrUser;
     /**
      * Get id
      *

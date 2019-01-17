@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * kurs
  *
- * @ORM\Table(name="kurs")
+ * @ORM\Table(name="Course")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\CourseRepository")
  */
 class Course
@@ -18,6 +18,8 @@ class Course
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\File",mappedBy="nrKursu")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\DownloadFile",mappedBy="nrKurs")
      */
     private $id;
 

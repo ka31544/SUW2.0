@@ -6,6 +6,9 @@ appyml:
     resource: "@AppBundle/Resources/config/routing.yml"
     prefix: /
 
+fos_user:
+    resource: "@FOSUserBundle/Resources/config/routing/all.xml"
+
 _welcome:
     path: /
     defaults: { _controller: AppBundle:Default:index }
@@ -21,7 +24,7 @@ _login:
 _main:
   path: /main
   defaults: { _controller: AppBundle:Main:index }
-  
+
 _logs:
  path: /logs
  defaults: { _controller: AppBundle:Logs:index }

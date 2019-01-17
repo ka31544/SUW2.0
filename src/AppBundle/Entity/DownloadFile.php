@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * DownloadFile
  *
- * @ORM\Table(name="pobieranie_pliku")
+ * @ORM\Table(name="DownloadFile")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\DownloadFileRepository")
  */
 class DownloadFile
@@ -37,19 +37,20 @@ class DownloadFile
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="nr_plik", type="integer")
+     *@ORM\ManyToOne(targetEntity="AppBundle\Entity\File",inversedBy="id")
      */
     private $nrPlik;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="nr_user", type="integer")
+     *@ORM\ManyToOne(targetEntity="AppBundle\Entity\User",inversedBy="id")
      */
     private $nrUser;
-
-
+    /**
+     * @var
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Course",inversedBy="id")
+     */
+private $nrKurs;
     /**
      * Get id
      *

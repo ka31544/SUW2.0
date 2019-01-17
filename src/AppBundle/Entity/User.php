@@ -1,16 +1,16 @@
 <?php
 
 namespace AppBundle\Entity;
-
+use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * users
  *
- * @ORM\Table(name="users")
+ * @ORM\Table(name="user")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  */
-class User
+class User extends BaseUser
 {
     /**
      * @var int
@@ -18,34 +18,32 @@ class User
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\dostep",mappedBy="nrUser")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\File",mappedBy="nrUser")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\DownloadFile",mappedBy="nrUser")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="login", type="string", length=7)
+     * @ORM\Column(name="login", type="string", nullable=true)
      */
     private $login;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="password", type="string", length=45)
-     */
-    private $password;
+
 
     /**
      * @var string
      *
-     * @ORM\Column(name="type_account", type="string", length=13)
+     * @ORM\Column(name="type_account", type="string", nullable=true)
      */
     private $typeAccount;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="active", type="integer")
+     * @ORM\Column(name="active", type="integer", nullable=true)
      */
     private $active;
 

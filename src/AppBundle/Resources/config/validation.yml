@@ -31,7 +31,6 @@ AppBundle\Entity\User:
 #          min: 8
 #          max: 32
 #          exactMessage: Hasło użytkownika powinno zawierać od 8 do 32 znaków.
-    typeAccount:
-      - Choice: [user, admin]
+
     active:
       - Choice: [0, 1]

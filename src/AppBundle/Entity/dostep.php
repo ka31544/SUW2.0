@@ -24,14 +24,13 @@ class dostep
     /**
      * @var int
      *
-     * @ORM\Column(name="nr_pliku", type="integer")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\File",inversedBy="id")
      */
     private $nrPliku;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="nr_user", type="integer")
+     *@ORM\ManyToOne(targetEntity="AppBundle\Entity\User",inversedBy="id")
      */
     private $nrUser;
 
@@ -46,29 +45,6 @@ class dostep
         return $this->id;
     }
 
-    /**
-     * Set nrPliku
-     *
-     * @param integer $nrPliku
-     *
-     * @return dostep
-     */
-    public function setNrPliku($nrPliku)
-    {
-        $this->nrPliku = $nrPliku;
-
-        return $this;
-    }
-
-    /**
-     * Get nrPliku
-     *
-     * @return int
-     */
-    public function getNrPliku()
-    {
-        return $this->nrPliku;
-    }
 
     /**
      * Set nrUser
