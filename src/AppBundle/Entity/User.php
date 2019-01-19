@@ -32,13 +32,6 @@ class User extends BaseUser
      */
     private $typeAccount;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="active", type="integer", nullable=true)
-     */
-    private $active;
-
 
     /**
      * Get id
@@ -50,6 +43,30 @@ class User extends BaseUser
         return $this->id;
     }
 
+
+    /**
+     * Set username
+     *
+     * @param string $username
+     *
+     * @return User
+     */
+    public function setUsername($username)
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    /**
+     * Get username
+     *
+     * @return string
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
 
     /**
      * Set password
@@ -98,28 +115,27 @@ class User extends BaseUser
     {
         return $this->typeAccount;
     }
-
     /**
      * Set active
      *
-     * @param integer $active
+     * @param integer $enabled
      *
      * @return User
      */
-    public function setActive($active)
+    public function setEnabled($enabled)
     {
-        $this->active = $active;
+        $this->enabled = $enabled;
 
         return $this;
     }
 
     /**
-     * Get active
+     * Get enabled
      *
      * @return int
      */
-    public function getActive()
+    public function getEnabled()
     {
-        return $this->active;
+        return $this->enabled;
     }
 }

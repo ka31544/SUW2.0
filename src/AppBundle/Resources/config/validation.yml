@@ -21,7 +21,7 @@ AppBundle\Entity\File:
 
 AppBundle\Entity\User:
   properties:
-    login:
+    username:
       - Length:
           min: 7
           max: 7
@@ -32,5 +32,5 @@ AppBundle\Entity\User:
 #          max: 32
 #          exactMessage: Hasło użytkownika powinno zawierać od 8 do 32 znaków.
 
-    active:
+    enabled:
       - Choice: [0, 1]

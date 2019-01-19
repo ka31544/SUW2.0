@@ -2,11 +2,6 @@
 
 {% block title %}SUW{% endblock %}
 
-{% block header %}
-    <a href="{{ path('_register') }}" id="registerButton" class="primary-button">Zarejestruj</a>
-    <a href="{{ path('_login') }}" id="loginButton" class="primary-button">Zaloguj</a>
-{% endblock %}
-
 {% block leftContent %}
     <div class="column is-6">
         <h2 class="title">Opis systemu</h2>
@@ -21,7 +16,7 @@
         <h3 class="subtitle"><i class="fa fa-users fa-fw"></i>Liczba użytkowników</h3>
 
         {#{{ user.login }}#}
-        {{ dump(app.user) }}
+        {#{{ dump(app.user) }}#}
 
         <ul class="list-items">
             <li class="items">Razem<br>{{ countUsers }}</li>
