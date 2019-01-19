@@ -24,14 +24,6 @@ class User extends BaseUser
      */
     protected $id;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="login", type="string", nullable=true)
-     */
-    private $login;
-
-
 
     /**
      * @var string
@@ -58,29 +50,6 @@ class User extends BaseUser
         return $this->id;
     }
 
-    /**
-     * Set login
-     *
-     * @param string $login
-     *
-     * @return User
-     */
-    public function setLogin($login)
-    {
-        $this->login = $login;
-
-        return $this;
-    }
-
-    /**
-     * Get login
-     *
-     * @return string
-     */
-    public function getLogin()
-    {
-        return $this->login;
-    }
 
     /**
      * Set password

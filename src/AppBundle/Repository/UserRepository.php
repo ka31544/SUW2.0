@@ -33,7 +33,7 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
     public function getByUsername($username)
     {
         $qb = $this->createQueryBuilder('u')
-            ->where('u.login = :username')
+            ->where('u.username = :username')
             ->setParameter('username', $username);
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
