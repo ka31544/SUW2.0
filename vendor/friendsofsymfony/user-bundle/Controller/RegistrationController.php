@@ -77,6 +77,7 @@ class RegistrationController extends Controller
                 $this->eventDispatcher->dispatch(FOSUserEvents::REGISTRATION_SUCCESS, $event);
 
                 $this->userManager->updateUser($user);
+                $user->setTypeAccount('user');
 
                 if (null === $response = $event->getResponse()) {
                     $url = $this->generateUrl('fos_user_registration_confirmed');
