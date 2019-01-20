@@ -1,0 +1,12 @@
+a5e43e,127.0.0.1,GET,http://localhost:8000/app_dev.php/user/,1547299320,,200
+aa58fa,127.0.0.1,GET,http://localhost:8000/app_dev.php/,1547299322,,200
+6ee34c,127.0.0.1,GET,http://localhost:8000/app_dev.php/main,1547299326,,200
+39074d,127.0.0.1,GET,http://localhost:8000/app_dev.php/course,1547299330,,301
+c915ee,127.0.0.1,GET,http://localhost:8000/app_dev.php/course/,1547299331,,200
+c0dd31,127.0.0.1,GET,http://localhost:8000/app_dev.php/user,1547299340,,301
+a6f871,127.0.0.1,GET,http://localhost:8000/app_dev.php/user/,1547299340,,200
+c61259,127.0.0.1,GET,http://localhost:8000/app_dev.php/user/1/show,1547299342,,200
+10093c,127.0.0.1,GET,http://localhost:8000/app_dev.php/user/,1547299347,,200
+a7d485,127.0.0.1,GET,http://localhost:8000/app_dev.php/user/1/edit,1547299349,,200
+9cd9fe,127.0.0.1,GET,http://localhost:8000/app_dev.php/course,1547299354,,301
+6fd3bb,127.0.0.1,GET,http://localhost:8000/app_dev.php/course/,1547299355,,200
