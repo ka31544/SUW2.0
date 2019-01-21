@@ -45,8 +45,7 @@
                                     <a href="{{ path('file_index') }}" class="primary-button">Pliki</a>
                                     {% if is_granted("ROLE_ADMIN") %}
                                     <a href="{{ path('user_index') }}" class="primary-button">Użytkownicy</a>
-                                    {% endif %}
-                                    {% if is_granted("ROLE_USER") %}
+                                    {% else %}
                                     <a href="{{ path('fos_user_profile_show') }}" class="primary-button">Profil</a>
                                     {% endif %}
                                 {% else %}
