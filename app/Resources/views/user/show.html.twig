@@ -26,10 +26,12 @@
         </tbody>
     </table>
 
+    {% if is_granted('ROLE_ADMIN') %}
     <a href="{{ path('user_edit', { 'id': user.id }) }}" class="primary-button">Edytuj</a>
     {{ form_start(delete_form) }}
         <input type="submit" value="Usuń" class="primary-button">
     {{ form_end(delete_form) }}
+    {% endif %}
 
     <a href="{{ path('user_index') }}"><i class="fa fa-reply fa-2x" title="Wróć do listy użytkowników"></i></a>
 

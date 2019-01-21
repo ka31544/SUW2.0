@@ -19,7 +19,9 @@
                 <td>{{ course.nazwa }}</td>
                 <td>
                     <a href="{{ path('course_show', { 'id': course.id }) }}" class="primary-button">Pokaż</a>
+                    {% if is_granted('ROLE_ADMIN') %}
                     <a href="{{ path('course_edit', { 'id': course.id }) }}" class="primary-button">Edytuj</a>
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}

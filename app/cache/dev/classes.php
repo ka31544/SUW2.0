@@ -2601,6 +2601,36 @@ return $controller;
 }
 namespace Symfony\Component\Security\Http
 {
+use Symfony\Component\HttpFoundation\Request;
+interface AccessMapInterface
+{
+public function getPatterns(Request $request);
+}
+}
+namespace Symfony\Component\Security\Http
+{
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestMatcherInterface;
+class AccessMap implements AccessMapInterface
+{
+private $map = array();
+public function add(RequestMatcherInterface $requestMatcher, array $attributes = array(), $channel = null)
+{
+$this->map[] = array($requestMatcher, $attributes, $channel);
+}
+public function getPatterns(Request $request)
+{
+foreach ($this->map as $elements) {
+if (null === $elements[0] || $elements[0]->matches($request)) {
+return array($elements[1], $elements[2]);
+}
+}
+return array(null, null);
+}
+}
+}
+namespace Symfony\Component\Security\Http
+{
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
@@ -3109,11 +3139,11 @@ namespace
 {
 class Twig_Environment
 {
-const VERSION ='1.36.0';
-const VERSION_ID = 13600;
+const VERSION ='1.37.1';
+const VERSION_ID = 13701;
 const MAJOR_VERSION = 1;
-const MINOR_VERSION = 36;
-const RELEASE_VERSION = 0;
+const MINOR_VERSION = 37;
+const RELEASE_VERSION = 1;
 const EXTRA_VERSION ='';
 protected $charset;
 protected $loader;
@@ -3138,27 +3168,27 @@ protected $strictVariables;
 protected $unaryOperators;
 protected $binaryOperators;
 protected $templateClassPrefix ='__TwigTemplate_';
-protected $functionCallbacks = array();
-protected $filterCallbacks = array();
+protected $functionCallbacks = [];
+protected $filterCallbacks = [];
 protected $staging;
 private $originalCache;
 private $bcWriteCacheFile = false;
 private $bcGetCacheFilename = false;
 private $lastModifiedExtension = 0;
-private $extensionsByClass = array();
-private $runtimeLoaders = array();
-private $runtimes = array();
+private $extensionsByClass = [];
+private $runtimeLoaders = [];
+private $runtimes = [];
 private $optionsHash;
-private $loading = array();
-public function __construct(Twig_LoaderInterface $loader = null, $options = array())
+private $loading = [];
+public function __construct(Twig_LoaderInterface $loader = null, $options = [])
 {
 if (null !== $loader) {
 $this->setLoader($loader);
 } else {
 @trigger_error('Not passing a Twig_LoaderInterface as the first constructor argument of Twig_Environment is deprecated since version 1.21.', E_USER_DEPRECATED);
 }
-$options = array_merge(array('debug'=> false,'charset'=>'UTF-8','base_template_class'=>'Twig_Template','strict_variables'=> false,'autoescape'=>'html','cache'=> false,'auto_reload'=> null,'optimizations'=> -1,
-), $options);
+$options = array_merge(['debug'=> false,'charset'=>'UTF-8','base_template_class'=>'Twig_Template','strict_variables'=> false,'autoescape'=>'html','cache'=> false,'auto_reload'=> null,'optimizations'=> -1,
+], $options);
 $this->debug = (bool) $options['debug'];
 $this->charset = strtoupper($options['charset']);
 $this->baseTemplateClass = $options['base_template_class'];
@@ -3269,11 +3299,11 @@ public function getTemplateClassPrefix()
 @trigger_error(sprintf('The %s method is deprecated since version 1.22 and will be removed in Twig 2.0.', __METHOD__), E_USER_DEPRECATED);
 return $this->templateClassPrefix;
 }
-public function render($name, array $context = array())
+public function render($name, array $context = [])
 {
 return $this->loadTemplate($name)->render($context);
 }
-public function display($name, array $context = array())
+public function display($name, array $context = [])
 {
 $this->loadTemplate($name)->display($context);
 }
@@ -3331,7 +3361,7 @@ if (!$this->runtimeInitialized) {
 $this->initRuntime();
 }
 if (isset($this->loading[$cls])) {
-throw new Twig_Error_Runtime(sprintf('Circular reference detected for Twig template "%s", path: %s.', $name, implode(' -> ', array_merge($this->loading, array($name)))));
+throw new Twig_Error_Runtime(sprintf('Circular reference detected for Twig template "%s", path: %s.', $name, implode(' -> ', array_merge($this->loading, [$name]))));
 }
 $this->loading[$cls] = $name;
 try {
@@ -3346,10 +3376,10 @@ return $this->loadedTemplates[$cls];
 public function createTemplate($template)
 {
 $name = sprintf('__string_template__%s', hash('sha256', $template, false));
-$loader = new Twig_Loader_Chain(array(
-new Twig_Loader_Array(array($name => $template)),
+$loader = new Twig_Loader_Chain([
+new Twig_Loader_Array([$name => $template]),
 $current = $this->getLoader(),
-));
+]);
 $this->setLoader($loader);
 try {
 $template = $this->loadTemplate($name);
@@ -3378,7 +3408,7 @@ return $this->lastModifiedExtension <= $time && $this->getLoader()->isFresh($nam
 public function resolveTemplate($names)
 {
 if (!is_array($names)) {
-$names = array($names);
+$names = [$names];
 }
 foreach ($names as $name) {
 if ($name instanceof Twig_Template) {
@@ -3400,7 +3430,7 @@ throw new Twig_Error_Loader(sprintf('Unable to find one of the following templat
 public function clearTemplateCache()
 {
 @trigger_error(sprintf('The %s method is deprecated since version 1.18.3 and will be removed in Twig 2.0.', __METHOD__), E_USER_DEPRECATED);
-$this->loadedTemplates = array();
+$this->loadedTemplates = [];
 }
 public function clearCacheFiles()
 {
@@ -3636,7 +3666,7 @@ return $this->parsers;
 }
 public function getTags()
 {
-$tags = array();
+$tags = [];
 foreach ($this->getTokenParsers()->getParsers() as $parser) {
 if ($parser instanceof Twig_TokenParserInterface) {
 $tags[$parser->getTag()] = $parser;
@@ -3861,7 +3891,7 @@ return Twig_Error_Syntax::computeAlternatives($name, $items);
 }
 protected function initGlobals()
 {
-$globals = array();
+$globals = [];
 foreach ($this->extensions as $name => $extension) {
 if (!$extension instanceof Twig_Extension_GlobalsInterface) {
 $m = new ReflectionMethod($extension,'getGlobals');
@@ -3883,13 +3913,13 @@ protected function initExtensions()
 if ($this->extensionInitialized) {
 return;
 }
-$this->parsers = new Twig_TokenParserBroker(array(), array(), false);
-$this->filters = array();
-$this->functions = array();
-$this->tests = array();
-$this->visitors = array();
-$this->unaryOperators = array();
-$this->binaryOperators = array();
+$this->parsers = new Twig_TokenParserBroker([], [], false);
+$this->filters = [];
+$this->functions = [];
+$this->tests = [];
+$this->visitors = [];
+$this->unaryOperators = [];
+$this->binaryOperators = [];
 foreach ($this->extensions as $extension) {
 $this->initExtension($extension);
 }
@@ -3954,7 +3984,7 @@ private function updateOptionsHash()
 {
 $hashParts = array_merge(
 array_keys($this->extensions),
-array(
+[
 (int) function_exists('twig_template_get_attributes'),
 PHP_MAJOR_VERSION,
 PHP_MINOR_VERSION,
@@ -3962,7 +3992,7 @@ self::VERSION,
 (int) $this->debug,
 $this->baseTemplateClass,
 (int) $this->strictVariables,
-)
+]
 );
 $this->optionsHash = implode(':', $hashParts);
 }
@@ -3995,31 +4025,31 @@ public function initRuntime(Twig_Environment $environment)
 }
 public function getTokenParsers()
 {
-return array();
+return [];
 }
 public function getNodeVisitors()
 {
-return array();
+return [];
 }
 public function getFilters()
 {
-return array();
+return [];
 }
 public function getTests()
 {
-return array();
+return [];
 }
 public function getFunctions()
 {
-return array();
+return [];
 }
 public function getOperators()
 {
-return array();
+return [];
 }
 public function getGlobals()
 {
-return array();
+return [];
 }
 public function getName()
 {
@@ -4036,10 +4066,10 @@ define('ENT_SUBSTITUTE', 8);
 }
 class Twig_Extension_Core extends Twig_Extension
 {
-protected $dateFormats = array('F j, Y H:i','%d days');
-protected $numberFormat = array(0,'.',',');
+protected $dateFormats = ['F j, Y H:i','%d days'];
+protected $numberFormat = [0,'.',','];
 protected $timezone = null;
-protected $escapers = array();
+protected $escapers = [];
 public function setEscaper($strategy, $callable)
 {
 $this->escapers[$strategy] = $callable;
@@ -4074,7 +4104,7 @@ return $this->timezone;
 }
 public function setNumberFormat($decimal, $decimalPoint, $thousandSep)
 {
-$this->numberFormat = array($decimal, $decimalPoint, $thousandSep);
+$this->numberFormat = [$decimal, $decimalPoint, $thousandSep];
 }
 public function getNumberFormat()
 {
@@ -4082,7 +4112,7 @@ return $this->numberFormat;
 }
 public function getTokenParsers()
 {
-return array(
+return [
 new Twig_TokenParser_For(),
 new Twig_TokenParser_If(),
 new Twig_TokenParser_Extends(),
@@ -4100,88 +4130,88 @@ new Twig_TokenParser_Do(),
 new Twig_TokenParser_Embed(),
 new Twig_TokenParser_With(),
 new Twig_TokenParser_Deprecated(),
-);
+];
 }
 public function getFilters()
 {
-$filters = array(
-new Twig_SimpleFilter('date','twig_date_format_filter', array('needs_environment'=> true)),
-new Twig_SimpleFilter('date_modify','twig_date_modify_filter', array('needs_environment'=> true)),
+$filters = [
+new Twig_SimpleFilter('date','twig_date_format_filter', ['needs_environment'=> true]),
+new Twig_SimpleFilter('date_modify','twig_date_modify_filter', ['needs_environment'=> true]),
 new Twig_SimpleFilter('format','sprintf'),
 new Twig_SimpleFilter('replace','twig_replace_filter'),
-new Twig_SimpleFilter('number_format','twig_number_format_filter', array('needs_environment'=> true)),
+new Twig_SimpleFilter('number_format','twig_number_format_filter', ['needs_environment'=> true]),
 new Twig_SimpleFilter('abs','abs'),
 new Twig_SimpleFilter('round','twig_round'),
 new Twig_SimpleFilter('url_encode','twig_urlencode_filter'),
 new Twig_SimpleFilter('json_encode','twig_jsonencode_filter'),
 new Twig_SimpleFilter('convert_encoding','twig_convert_encoding'),
-new Twig_SimpleFilter('title','twig_title_string_filter', array('needs_environment'=> true)),
-new Twig_SimpleFilter('capitalize','twig_capitalize_string_filter', array('needs_environment'=> true)),
+new Twig_SimpleFilter('title','twig_title_string_filter', ['needs_environment'=> true]),
+new Twig_SimpleFilter('capitalize','twig_capitalize_string_filter', ['needs_environment'=> true]),
 new Twig_SimpleFilter('upper','strtoupper'),
 new Twig_SimpleFilter('lower','strtolower'),
 new Twig_SimpleFilter('striptags','strip_tags'),
 new Twig_SimpleFilter('trim','twig_trim_filter'),
-new Twig_SimpleFilter('nl2br','nl2br', array('pre_escape'=>'html','is_safe'=> array('html'))),
+new Twig_SimpleFilter('nl2br','nl2br', ['pre_escape'=>'html','is_safe'=> ['html']]),
 new Twig_SimpleFilter('join','twig_join_filter'),
-new Twig_SimpleFilter('split','twig_split_filter', array('needs_environment'=> true)),
+new Twig_SimpleFilter('split','twig_split_filter', ['needs_environment'=> true]),
 new Twig_SimpleFilter('sort','twig_sort_filter'),
 new Twig_SimpleFilter('merge','twig_array_merge'),
 new Twig_SimpleFilter('batch','twig_array_batch'),
-new Twig_SimpleFilter('reverse','twig_reverse_filter', array('needs_environment'=> true)),
-new Twig_SimpleFilter('length','twig_length_filter', array('needs_environment'=> true)),
-new Twig_SimpleFilter('slice','twig_slice', array('needs_environment'=> true)),
-new Twig_SimpleFilter('first','twig_first', array('needs_environment'=> true)),
-new Twig_SimpleFilter('last','twig_last', array('needs_environment'=> true)),
-new Twig_SimpleFilter('default','_twig_default_filter', array('node_class'=>'Twig_Node_Expression_Filter_Default')),
+new Twig_SimpleFilter('reverse','twig_reverse_filter', ['needs_environment'=> true]),
+new Twig_SimpleFilter('length','twig_length_filter', ['needs_environment'=> true]),
+new Twig_SimpleFilter('slice','twig_slice', ['needs_environment'=> true]),
+new Twig_SimpleFilter('first','twig_first', ['needs_environment'=> true]),
+new Twig_SimpleFilter('last','twig_last', ['needs_environment'=> true]),
+new Twig_SimpleFilter('default','_twig_default_filter', ['node_class'=>'Twig_Node_Expression_Filter_Default']),
 new Twig_SimpleFilter('keys','twig_get_array_keys_filter'),
-new Twig_SimpleFilter('escape','twig_escape_filter', array('needs_environment'=> true,'is_safe_callback'=>'twig_escape_filter_is_safe')),
-new Twig_SimpleFilter('e','twig_escape_filter', array('needs_environment'=> true,'is_safe_callback'=>'twig_escape_filter_is_safe')),
-);
+new Twig_SimpleFilter('escape','twig_escape_filter', ['needs_environment'=> true,'is_safe_callback'=>'twig_escape_filter_is_safe']),
+new Twig_SimpleFilter('e','twig_escape_filter', ['needs_environment'=> true,'is_safe_callback'=>'twig_escape_filter_is_safe']),
+];
 if (function_exists('mb_get_info')) {
-$filters[] = new Twig_SimpleFilter('upper','twig_upper_filter', array('needs_environment'=> true));
-$filters[] = new Twig_SimpleFilter('lower','twig_lower_filter', array('needs_environment'=> true));
+$filters[] = new Twig_SimpleFilter('upper','twig_upper_filter', ['needs_environment'=> true]);
+$filters[] = new Twig_SimpleFilter('lower','twig_lower_filter', ['needs_environment'=> true]);
 }
 return $filters;
 }
 public function getFunctions()
 {
-return array(
+return [
 new Twig_SimpleFunction('max','max'),
 new Twig_SimpleFunction('min','min'),
 new Twig_SimpleFunction('range','range'),
 new Twig_SimpleFunction('constant','twig_constant'),
 new Twig_SimpleFunction('cycle','twig_cycle'),
-new Twig_SimpleFunction('random','twig_random', array('needs_environment'=> true)),
-new Twig_SimpleFunction('date','twig_date_converter', array('needs_environment'=> true)),
-new Twig_SimpleFunction('include','twig_include', array('needs_environment'=> true,'needs_context'=> true,'is_safe'=> array('all'))),
-new Twig_SimpleFunction('source','twig_source', array('needs_environment'=> true,'is_safe'=> array('all'))),
-);
+new Twig_SimpleFunction('random','twig_random', ['needs_environment'=> true]),
+new Twig_SimpleFunction('date','twig_date_converter', ['needs_environment'=> true]),
+new Twig_SimpleFunction('include','twig_include', ['needs_environment'=> true,'needs_context'=> true,'is_safe'=> ['all']]),
+new Twig_SimpleFunction('source','twig_source', ['needs_environment'=> true,'is_safe'=> ['all']]),
+];
 }
 public function getTests()
 {
-return array(
-new Twig_SimpleTest('even', null, array('node_class'=>'Twig_Node_Expression_Test_Even')),
-new Twig_SimpleTest('odd', null, array('node_class'=>'Twig_Node_Expression_Test_Odd')),
-new Twig_SimpleTest('defined', null, array('node_class'=>'Twig_Node_Expression_Test_Defined')),
-new Twig_SimpleTest('sameas', null, array('node_class'=>'Twig_Node_Expression_Test_Sameas','deprecated'=>'1.21','alternative'=>'same as')),
-new Twig_SimpleTest('same as', null, array('node_class'=>'Twig_Node_Expression_Test_Sameas')),
-new Twig_SimpleTest('none', null, array('node_class'=>'Twig_Node_Expression_Test_Null')),
-new Twig_SimpleTest('null', null, array('node_class'=>'Twig_Node_Expression_Test_Null')),
-new Twig_SimpleTest('divisibleby', null, array('node_class'=>'Twig_Node_Expression_Test_Divisibleby','deprecated'=>'1.21','alternative'=>'divisible by')),
-new Twig_SimpleTest('divisible by', null, array('node_class'=>'Twig_Node_Expression_Test_Divisibleby')),
-new Twig_SimpleTest('constant', null, array('node_class'=>'Twig_Node_Expression_Test_Constant')),
+return [
+new Twig_SimpleTest('even', null, ['node_class'=>'Twig_Node_Expression_Test_Even']),
+new Twig_SimpleTest('odd', null, ['node_class'=>'Twig_Node_Expression_Test_Odd']),
+new Twig_SimpleTest('defined', null, ['node_class'=>'Twig_Node_Expression_Test_Defined']),
+new Twig_SimpleTest('sameas', null, ['node_class'=>'Twig_Node_Expression_Test_Sameas','deprecated'=>'1.21','alternative'=>'same as']),
+new Twig_SimpleTest('same as', null, ['node_class'=>'Twig_Node_Expression_Test_Sameas']),
+new Twig_SimpleTest('none', null, ['node_class'=>'Twig_Node_Expression_Test_Null']),
+new Twig_SimpleTest('null', null, ['node_class'=>'Twig_Node_Expression_Test_Null']),
+new Twig_SimpleTest('divisibleby', null, ['node_class'=>'Twig_Node_Expression_Test_Divisibleby','deprecated'=>'1.21','alternative'=>'divisible by']),
+new Twig_SimpleTest('divisible by', null, ['node_class'=>'Twig_Node_Expression_Test_Divisibleby']),
+new Twig_SimpleTest('constant', null, ['node_class'=>'Twig_Node_Expression_Test_Constant']),
 new Twig_SimpleTest('empty','twig_test_empty'),
 new Twig_SimpleTest('iterable','twig_test_iterable'),
-);
+];
 }
 public function getOperators()
 {
-return array(
-array('not'=> array('precedence'=> 50,'class'=>'Twig_Node_Expression_Unary_Not'),'-'=> array('precedence'=> 500,'class'=>'Twig_Node_Expression_Unary_Neg'),'+'=> array('precedence'=> 500,'class'=>'Twig_Node_Expression_Unary_Pos'),
-),
-array('or'=> array('precedence'=> 10,'class'=>'Twig_Node_Expression_Binary_Or','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'and'=> array('precedence'=> 15,'class'=>'Twig_Node_Expression_Binary_And','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'b-or'=> array('precedence'=> 16,'class'=>'Twig_Node_Expression_Binary_BitwiseOr','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'b-xor'=> array('precedence'=> 17,'class'=>'Twig_Node_Expression_Binary_BitwiseXor','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'b-and'=> array('precedence'=> 18,'class'=>'Twig_Node_Expression_Binary_BitwiseAnd','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'=='=> array('precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_Equal','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'!='=> array('precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_NotEqual','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'<'=> array('precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_Less','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'>'=> array('precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_Greater','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'>='=> array('precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_GreaterEqual','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'<='=> array('precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_LessEqual','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'not in'=> array('precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_NotIn','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'in'=> array('precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_In','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'matches'=> array('precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_Matches','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'starts with'=> array('precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_StartsWith','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'ends with'=> array('precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_EndsWith','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'..'=> array('precedence'=> 25,'class'=>'Twig_Node_Expression_Binary_Range','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'+'=> array('precedence'=> 30,'class'=>'Twig_Node_Expression_Binary_Add','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'-'=> array('precedence'=> 30,'class'=>'Twig_Node_Expression_Binary_Sub','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'~'=> array('precedence'=> 40,'class'=>'Twig_Node_Expression_Binary_Concat','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'*'=> array('precedence'=> 60,'class'=>'Twig_Node_Expression_Binary_Mul','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'/'=> array('precedence'=> 60,'class'=>'Twig_Node_Expression_Binary_Div','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'//'=> array('precedence'=> 60,'class'=>'Twig_Node_Expression_Binary_FloorDiv','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'%'=> array('precedence'=> 60,'class'=>'Twig_Node_Expression_Binary_Mod','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'is'=> array('precedence'=> 100,'associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'is not'=> array('precedence'=> 100,'associativity'=> Twig_ExpressionParser::OPERATOR_LEFT),'**'=> array('precedence'=> 200,'class'=>'Twig_Node_Expression_Binary_Power','associativity'=> Twig_ExpressionParser::OPERATOR_RIGHT),'??'=> array('precedence'=> 300,'class'=>'Twig_Node_Expression_NullCoalesce','associativity'=> Twig_ExpressionParser::OPERATOR_RIGHT),
-),
-);
+return [
+['not'=> ['precedence'=> 50,'class'=>'Twig_Node_Expression_Unary_Not'],'-'=> ['precedence'=> 500,'class'=>'Twig_Node_Expression_Unary_Neg'],'+'=> ['precedence'=> 500,'class'=>'Twig_Node_Expression_Unary_Pos'],
+],
+['or'=> ['precedence'=> 10,'class'=>'Twig_Node_Expression_Binary_Or','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'and'=> ['precedence'=> 15,'class'=>'Twig_Node_Expression_Binary_And','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'b-or'=> ['precedence'=> 16,'class'=>'Twig_Node_Expression_Binary_BitwiseOr','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'b-xor'=> ['precedence'=> 17,'class'=>'Twig_Node_Expression_Binary_BitwiseXor','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'b-and'=> ['precedence'=> 18,'class'=>'Twig_Node_Expression_Binary_BitwiseAnd','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'=='=> ['precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_Equal','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'!='=> ['precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_NotEqual','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'<'=> ['precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_Less','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'>'=> ['precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_Greater','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'>='=> ['precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_GreaterEqual','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'<='=> ['precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_LessEqual','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'not in'=> ['precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_NotIn','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'in'=> ['precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_In','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'matches'=> ['precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_Matches','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'starts with'=> ['precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_StartsWith','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'ends with'=> ['precedence'=> 20,'class'=>'Twig_Node_Expression_Binary_EndsWith','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'..'=> ['precedence'=> 25,'class'=>'Twig_Node_Expression_Binary_Range','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'+'=> ['precedence'=> 30,'class'=>'Twig_Node_Expression_Binary_Add','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'-'=> ['precedence'=> 30,'class'=>'Twig_Node_Expression_Binary_Sub','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'~'=> ['precedence'=> 40,'class'=>'Twig_Node_Expression_Binary_Concat','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'*'=> ['precedence'=> 60,'class'=>'Twig_Node_Expression_Binary_Mul','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'/'=> ['precedence'=> 60,'class'=>'Twig_Node_Expression_Binary_Div','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'//'=> ['precedence'=> 60,'class'=>'Twig_Node_Expression_Binary_FloorDiv','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'%'=> ['precedence'=> 60,'class'=>'Twig_Node_Expression_Binary_Mod','associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'is'=> ['precedence'=> 100,'associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'is not'=> ['precedence'=> 100,'associativity'=> Twig_ExpressionParser::OPERATOR_LEFT],'**'=> ['precedence'=> 200,'class'=>'Twig_Node_Expression_Binary_Power','associativity'=> Twig_ExpressionParser::OPERATOR_RIGHT],'??'=> ['precedence'=> 300,'class'=>'Twig_Node_Expression_NullCoalesce','associativity'=> Twig_ExpressionParser::OPERATOR_RIGHT],
+],
+];
 }
 public function getName()
 {
@@ -4327,17 +4357,6 @@ return http_build_query($url,'','&');
 }
 return rawurlencode($url);
 }
-if (PHP_VERSION_ID < 50300) {
-function twig_jsonencode_filter($value, $options = 0)
-{
-if ($value instanceof Twig_Markup) {
-$value = (string) $value;
-} elseif (is_array($value)) {
-array_walk_recursive($value,'_twig_markup2string');
-}
-return json_encode($value);
-}
-} else {
 function twig_jsonencode_filter($value, $options = 0)
 {
 if ($value instanceof Twig_Markup) {
@@ -4346,7 +4365,6 @@ $value = (string) $value;
 array_walk_recursive($value,'_twig_markup2string');
 }
 return json_encode($value, $options);
-}
 }
 function _twig_markup2string(&$value)
 {
@@ -4378,7 +4396,7 @@ if ($start >= 0 && $length >= 0 && $item instanceof Iterator) {
 try {
 return iterator_to_array(new LimitIterator($item, $start, null === $length ? -1 : $length), $preserveKeys);
 } catch (OutOfBoundsException $exception) {
-return array();
+return [];
 }
 }
 $item = iterator_to_array($item, $preserveKeys);
@@ -4402,12 +4420,24 @@ function twig_last(Twig_Environment $env, $item)
 $elements = twig_slice($env, $item, -1, 1, false);
 return is_string($elements) ? $elements : current($elements);
 }
-function twig_join_filter($value, $glue ='')
+function twig_join_filter($value, $glue ='', $and = null)
 {
 if ($value instanceof Traversable) {
 $value = iterator_to_array($value, false);
+} else {
+$value = (array) $value;
 }
-return implode($glue, (array) $value);
+if (0 === count($value)) {
+return'';
+}
+if (null === $and || $and === $glue) {
+return implode($glue, $value);
+}
+$v = array_values($value);
+if (1 === count($v)) {
+return $v[0];
+}
+return implode($glue, array_slice($value, 0, -1)).$and.$v[count($v) - 1];
 }
 function twig_split_filter(Twig_Environment $env, $value, $delimiter, $limit = null)
 {
@@ -4422,9 +4452,9 @@ return preg_split('/(?<!^)(?!$)/u', $value);
 }
 $length = mb_strlen($value, $charset);
 if ($length < $limit) {
-return array($value);
+return [$value];
 }
-$r = array();
+$r = [];
 for ($i = 0; $i < $length; $i += $limit) {
 $r[] = mb_substr($value, $i, $limit, $charset);
 }
@@ -4444,7 +4474,7 @@ while ($array instanceof IteratorAggregate) {
 $array = $array->getIterator();
 }
 if ($array instanceof Iterator) {
-$keys = array();
+$keys = [];
 $array->rewind();
 while ($array->valid()) {
 $keys[] = $array->key();
@@ -4452,14 +4482,14 @@ $array->next();
 }
 return $keys;
 }
-$keys = array();
+$keys = [];
 foreach ($array as $key => $item) {
 $keys[] = $key;
 }
 return $keys;
 }
 if (!is_array($array)) {
-return array();
+return [];
 }
 return array_keys($array);
 }
@@ -4543,7 +4573,7 @@ return $string;
 if (!is_string($string)) {
 if (is_object($string) && method_exists($string,'__toString')) {
 $string = (string) $string;
-} elseif (in_array($strategy, array('html','js','css','html_attr','url'))) {
+} elseif (in_array($strategy, ['html','js','css','html_attr','url'])) {
 return $string;
 }
 }
@@ -4555,8 +4585,8 @@ $charset = $env->getCharset();
 }
 switch ($strategy) {
 case'html':
-static $htmlspecialcharsCharsets = array('ISO-8859-1'=> true,'ISO8859-1'=> true,'ISO-8859-15'=> true,'ISO8859-15'=> true,'utf-8'=> true,'UTF-8'=> true,'CP866'=> true,'IBM866'=> true,'866'=> true,'CP1251'=> true,'WINDOWS-1251'=> true,'WIN-1251'=> true,'1251'=> true,'CP1252'=> true,'WINDOWS-1252'=> true,'1252'=> true,'KOI8-R'=> true,'KOI8-RU'=> true,'KOI8R'=> true,'BIG5'=> true,'950'=> true,'GB2312'=> true,'936'=> true,'BIG5-HKSCS'=> true,'SHIFT_JIS'=> true,'SJIS'=> true,'932'=> true,'EUC-JP'=> true,'EUCJP'=> true,'ISO8859-5'=> true,'ISO-8859-5'=> true,'MACROMAN'=> true,
-);
+static $htmlspecialcharsCharsets = ['ISO-8859-1'=> true,'ISO8859-1'=> true,'ISO-8859-15'=> true,'ISO8859-15'=> true,'utf-8'=> true,'UTF-8'=> true,'CP866'=> true,'IBM866'=> true,'866'=> true,'CP1251'=> true,'WINDOWS-1251'=> true,'WIN-1251'=> true,'1251'=> true,'CP1252'=> true,'WINDOWS-1252'=> true,'1252'=> true,'KOI8-R'=> true,'KOI8-RU'=> true,'KOI8R'=> true,'BIG5'=> true,'950'=> true,'GB2312'=> true,'936'=> true,'BIG5-HKSCS'=> true,'SHIFT_JIS'=> true,'SJIS'=> true,'932'=> true,'EUC-JP'=> true,'EUCJP'=> true,'ISO8859-5'=> true,'ISO-8859-5'=> true,'MACROMAN'=> true,
+];
 if (isset($htmlspecialcharsCharsets[$charset])) {
 return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, $charset);
 }
@@ -4604,9 +4634,6 @@ $string = twig_convert_encoding($string, $charset,'UTF-8');
 }
 return $string;
 case'url':
-if (PHP_VERSION_ID < 50300) {
-return str_replace('%7E','~', rawurlencode($string));
-}
 return rawurlencode($string);
 default:
 static $escapers;
@@ -4616,7 +4643,7 @@ $escapers = $env->getExtension('Twig_Extension_Core')->getEscapers();
 if (isset($escapers[$strategy])) {
 return call_user_func($escapers[$strategy], $env, $string, $charset);
 }
-$validStrategies = implode(', ', array_merge(array('html','js','url','css','html_attr'), array_keys($escapers)));
+$validStrategies = implode(', ', array_merge(['html','js','url','css','html_attr'], array_keys($escapers)));
 throw new Twig_Error_Runtime(sprintf('Invalid escaping strategy "%s" (valid ones: %s).', $strategy, $validStrategies));
 }
 }
@@ -4624,11 +4651,11 @@ function twig_escape_filter_is_safe(Twig_Node $filterArgs)
 {
 foreach ($filterArgs as $arg) {
 if ($arg instanceof Twig_Node_Expression_Constant) {
-return array($arg->getAttribute('value'));
+return [$arg->getAttribute('value')];
 }
-return array();
+return [];
 }
-return array('html');
+return ['html'];
 }
 if (function_exists('mb_convert_encoding')) {
 function twig_convert_encoding($string, $to, $from)
@@ -4670,8 +4697,8 @@ return $code;
 function _twig_escape_js_callback($matches)
 {
 $char = $matches[0];
-static $shortMap = array('\\'=>'\\\\','/'=>'\\/',"\x08"=>'\b',"\x0C"=>'\f',"\x0A"=>'\n',"\x0D"=>'\r',"\x09"=>'\t',
-);
+static $shortMap = ['\\'=>'\\\\','/'=>'\\/',"\x08"=>'\b',"\x0C"=>'\f',"\x0A"=>'\n',"\x0D"=>'\r',"\x09"=>'\t',
+];
 if (isset($shortMap[$char])) {
 return $shortMap[$char];
 }
@@ -4695,12 +4722,12 @@ if (($ord <= 0x1f &&"\t"!= $chr &&"\n"!= $chr &&"\r"!= $chr) || ($ord >= 0x7f &&
 return'&#xFFFD;';
 }
 if (1 == strlen($chr)) {
-static $entityMap = array(
+static $entityMap = [
 34 =>'&quot;',
 38 =>'&amp;',
 60 =>'&lt;',
 62 =>'&gt;',
-);
+];
 if (isset($entityMap[$ord])) {
 return $entityMap[$ord];
 }
@@ -4797,7 +4824,7 @@ function twig_ensure_traversable($seq)
 if ($seq instanceof Traversable || is_array($seq)) {
 return $seq;
 }
-return array();
+return [];
 }
 function twig_test_empty($value)
 {
@@ -4807,13 +4834,13 @@ return 0 == count($value);
 if (is_object($value) && method_exists($value,'__toString')) {
 return''=== (string) $value;
 }
-return''=== $value || false === $value || null === $value || array() === $value;
+return''=== $value || false === $value || null === $value || [] === $value;
 }
 function twig_test_iterable($value)
 {
 return $value instanceof Traversable || is_array($value);
 }
-function twig_include(Twig_Environment $env, $context, $template, $variables = array(), $withContext = true, $ignoreMissing = false, $sandboxed = false)
+function twig_include(Twig_Environment $env, $context, $template, $variables = [], $withContext = true, $ignoreMissing = false, $sandboxed = false)
 {
 $alreadySandboxed = false;
 $sandbox = null;
@@ -4912,17 +4939,17 @@ $this->setDefaultStrategy($defaultStrategy);
 }
 public function getTokenParsers()
 {
-return array(new Twig_TokenParser_AutoEscape());
+return [new Twig_TokenParser_AutoEscape()];
 }
 public function getNodeVisitors()
 {
-return array(new Twig_NodeVisitor_Escaper());
+return [new Twig_NodeVisitor_Escaper()];
 }
 public function getFilters()
 {
-return array(
-new Twig_SimpleFilter('raw','twig_raw_filter', array('is_safe'=> array('all'))),
-);
+return [
+new Twig_SimpleFilter('raw','twig_raw_filter', ['is_safe'=> ['all']]),
+];
 }
 public function setDefaultStrategy($defaultStrategy)
 {
@@ -4935,7 +4962,7 @@ if ('filename'=== $defaultStrategy) {
 $defaultStrategy ='name';
 }
 if ('name'=== $defaultStrategy) {
-$defaultStrategy = array('Twig_FileExtensionEscapingStrategy','guess');
+$defaultStrategy = ['Twig_FileExtensionEscapingStrategy','guess'];
 }
 $this->defaultStrategy = $defaultStrategy;
 }
@@ -4968,7 +4995,7 @@ $this->optimizers = $optimizers;
 }
 public function getNodeVisitors()
 {
-return array(new Twig_NodeVisitor_Optimizer($this->optimizers));
+return [new Twig_NodeVisitor_Optimizer($this->optimizers)];
 }
 public function getName()
 {
@@ -5017,7 +5044,7 @@ const ANY_CALL ='any';
 const ARRAY_CALL ='array';
 const METHOD_CALL ='method';
 public function render(array $context);
-public function display(array $context, array $blocks = array());
+public function display(array $context, array $blocks = []);
 public function getEnvironment();
 }
 }
@@ -5025,12 +5052,12 @@ namespace
 {
 abstract class Twig_Template implements Twig_TemplateInterface
 {
-protected static $cache = array();
+protected static $cache = [];
 protected $parent;
-protected $parents = array();
+protected $parents = [];
 protected $env;
-protected $blocks = array();
-protected $traits = array();
+protected $blocks = [];
+protected $traits = [];
 public function __construct(Twig_Environment $env)
 {
 $this->env = $env;
@@ -5042,7 +5069,7 @@ return $this->getTemplateName();
 abstract public function getTemplateName();
 public function getDebugInfo()
 {
-return array();
+return [];
 }
 public function getSource()
 {
@@ -5068,8 +5095,8 @@ $parent = $this->doGetParent($context);
 if (false === $parent) {
 return false;
 }
-if ($parent instanceof self) {
-return $this->parents[$parent->getTemplateName()] = $parent;
+if ($parent instanceof self || $parent instanceof Twig_TemplateWrapper) {
+return $this->parents[$parent->getSourceContext()->getName()] = $parent;
 }
 if (!isset($this->parents[$parent])) {
 $this->parents[$parent] = $this->loadTemplate($parent);
@@ -5089,7 +5116,7 @@ public function isTraitable()
 {
 return true;
 }
-public function displayParentBlock($name, array $context, array $blocks = array())
+public function displayParentBlock($name, array $context, array $blocks = [])
 {
 $name = (string) $name;
 if (isset($this->traits[$name])) {
@@ -5100,7 +5127,7 @@ $parent->displayBlock($name, $context, $blocks, false);
 throw new Twig_Error_Runtime(sprintf('The template has no parent and no traits defining the "%s" block.', $name), -1, $this->getSourceContext());
 }
 }
-public function displayBlock($name, array $context, array $blocks = array(), $useBlocks = true)
+public function displayBlock($name, array $context, array $blocks = [], $useBlocks = true)
 {
 $name = (string) $name;
 if ($useBlocks && isset($blocks[$name])) {
@@ -5137,19 +5164,19 @@ $parent->displayBlock($name, $context, array_merge($this->blocks, $blocks), fals
 @trigger_error(sprintf('Silent display of undefined block "%s" in template "%s" is deprecated since version 1.29 and will throw an exception in 2.0. Use the "block(\'%s\') is defined" expression to test for block existence.', $name, $this->getTemplateName(), $name), E_USER_DEPRECATED);
 }
 }
-public function renderParentBlock($name, array $context, array $blocks = array())
+public function renderParentBlock($name, array $context, array $blocks = [])
 {
 ob_start();
 $this->displayParentBlock($name, $context, $blocks);
 return ob_get_clean();
 }
-public function renderBlock($name, array $context, array $blocks = array(), $useBlocks = true)
+public function renderBlock($name, array $context, array $blocks = [], $useBlocks = true)
 {
 ob_start();
 $this->displayBlock($name, $context, $blocks, $useBlocks);
 return ob_get_clean();
 }
-public function hasBlock($name, array $context = null, array $blocks = array())
+public function hasBlock($name, array $context = null, array $blocks = [])
 {
 if (null === $context) {
 @trigger_error('The '.__METHOD__.' method is internal and should never be called; calling it directly is deprecated since version 1.28 and won\'t be possible anymore in 2.0.', E_USER_DEPRECATED);
@@ -5166,7 +5193,7 @@ return $parent->hasBlock($name, $context);
 }
 return false;
 }
-public function getBlockNames(array $context = null, array $blocks = array())
+public function getBlockNames(array $context = null, array $blocks = [])
 {
 if (null === $context) {
 @trigger_error('The '.__METHOD__.' method is internal and should never be called; calling it directly is deprecated since version 1.28 and won\'t be possible anymore in 2.0.', E_USER_DEPRECATED);
@@ -5184,10 +5211,7 @@ try {
 if (is_array($template)) {
 return $this->env->resolveTemplate($template);
 }
-if ($template instanceof self) {
-return $template;
-}
-if ($template instanceof Twig_TemplateWrapper) {
+if ($template instanceof self || $template instanceof Twig_TemplateWrapper) {
 return $template;
 }
 return $this->env->loadTemplate($template, $index);
@@ -5210,7 +5234,7 @@ public function getBlocks()
 {
 return $this->blocks;
 }
-public function display(array $context, array $blocks = array())
+public function display(array $context, array $blocks = [])
 {
 $this->displayWithErrorHandling($this->env->mergeGlobals($context), array_merge($this->blocks, $blocks));
 }
@@ -5233,7 +5257,7 @@ throw $e;
 }
 return ob_get_clean();
 }
-protected function displayWithErrorHandling(array $context, array $blocks = array())
+protected function displayWithErrorHandling(array $context, array $blocks = [])
 {
 try {
 $this->doDisplay($context, $blocks);
@@ -5250,7 +5274,7 @@ throw $e;
 throw new Twig_Error_Runtime(sprintf('An exception has been thrown during the rendering of a template ("%s").', $e->getMessage()), -1, $this->getSourceContext(), $e);
 }
 }
-abstract protected function doDisplay(array $context, array $blocks = array());
+abstract protected function doDisplay(array $context, array $blocks = []);
 final protected function getContext($context, $item, $ignoreStrictCheck = false)
 {
 if (!array_key_exists($item, $context)) {
@@ -5261,11 +5285,11 @@ throw new Twig_Error_Runtime(sprintf('Variable "%s" does not exist.', $item), -1
 }
 return $context[$item];
 }
-protected function getAttribute($object, $item, array $arguments = array(), $type = self::ANY_CALL, $isDefinedTest = false, $ignoreStrictCheck = false)
+protected function getAttribute($object, $item, array $arguments = [], $type = self::ANY_CALL, $isDefinedTest = false, $ignoreStrictCheck = false)
 {
 if (self::METHOD_CALL !== $type) {
 $arrayItem = is_bool($item) || is_float($item) ? (int) $item : $item;
-if ((is_array($object) && (isset($object[$arrayItem]) || array_key_exists($arrayItem, $object)))
+if (((is_array($object) || $object instanceof ArrayObject) && (isset($object[$arrayItem]) || array_key_exists($arrayItem, $object)))
 || ($object instanceof ArrayAccess && isset($object[$arrayItem]))
 ) {
 if ($isDefinedTest) {
@@ -5334,7 +5358,7 @@ $class = get_class($object);
 if (!isset(self::$cache[$class])) {
 if ($object instanceof self) {
 $ref = new ReflectionClass($class);
-$methods = array();
+$methods = [];
 foreach ($ref->getMethods(ReflectionMethod::IS_PUBLIC) as $refMethod) {
 if ('getenvironment'!== strtolower($refMethod->name)) {
 $methods[] = $refMethod->name;
@@ -5344,7 +5368,7 @@ $methods[] = $refMethod->name;
 $methods = get_class_methods($object);
 }
 sort($methods);
-$cache = array();
+$cache = [];
 foreach ($methods as $method) {
 $cache[$method] = $method;
 $cache[$lcName = strtolower($method)] = $method;
@@ -5395,7 +5419,7 @@ try {
 if (!$arguments) {
 $ret = $object->$method();
 } else {
-$ret = call_user_func_array(array($object, $method), $arguments);
+$ret = call_user_func_array([$object, $method], $arguments);
 }
 } catch (BadMethodCallException $e) {
 if ($call && ($ignoreStrictCheck || !$this->env->isStrictVariables())) {
